@@ -1,7 +1,7 @@
-import { height } from '@fortawesome/free-regular-svg-icons/faAddressBook'
 import Footer from './Footer/Footer.jsx'
 import Gamescreen from './Gamescreen/Gamescreen.jsx'
 import logo from './assets/AA_logo.png'
+import hdlogo from './assets/half-dome-logo.png'
 
 function App() {
 
@@ -9,7 +9,13 @@ function App() {
     <>
      <div className='page'>
         <div className='item1'>
-          <img src={logo} className='logo'></img>
+
+          <div className='logo_wrapper'>
+            <img src={logo} className='logo'></img>
+          </div>
+
+          <a href="https://www.halfdome.games/" target='_blank'><img src={hdlogo} className='hdlogo'></img></a>
+
         </div>
         <div className='item2'>
           <Gamescreen>

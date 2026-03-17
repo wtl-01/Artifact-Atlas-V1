@@ -1,0 +1,118 @@
+.list {
+    display: flex;
+    gap: 16px;
+    padding: 0;
+    list-style: none;
+    font-family: "Nunito", sans-serif;
+    font-weight: 900;
+    color: white;
+    flex-wrap: wrap;       
+    justify-content: center; 
+    opacity: 0.5;
+}
+
+.modal, .overlay {
+    text-transform: uppercase;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    position: fixed;
+    z-index: 1000; 
+}
+
+.overlay {
+    background: rgba(49,49,49,0.8);
+}
+.modalContent {
+    position: absolute;
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%, -50%);
+    line-height: 1.4;
+    background: white;
+    
+    width: 90%; 
+    max-width: 600px;
+    height: auto; 
+    max-height: 90vh; 
+    
+    padding: 30px; 
+    border-radius: 20px;
+    color: black;
+    z-index: 1001;
+    font-family: "Nunito", sans-serif;
+    font-weight: 900;
+    
+    overflow-y: auto; 
+    
+    box-sizing: border-box;
+}
+
+.form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.closeModal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 5px 7px;
+    border-radius: 5px;
+    background-color: rgb(26, 23, 23);
+    transition: background-color 1.5s ease 1s;
+    cursor: pointer;
+    border: 2px solid rgba(15, 12, 12, 0.1);
+    box-shadow: inset 0px 2px 0px 0px rgba(255, 255, 255, .15), 0px 3px 0px 0px rgba(255, 255, 255, .15);
+}
+
+.messageField {
+    min-height: 150px; 
+    max-height: 200px;
+    resize: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+
+.closeModal:hover {
+    background-color: rgba(53, 49, 49, 0.849);
+}
+
+.closeIcon {
+    width: 20px;
+    height: 25px;
+}
+
+.sendButton {
+    margin-top: 30px;
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%; 
+    max-width: 500px; 
+    box-sizing: border-box; 
+}
+
+.inputField {
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box; 
+    border-radius: 10px;
+    border: 1px solid #ccc; 
+}
+
+.sendButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+}

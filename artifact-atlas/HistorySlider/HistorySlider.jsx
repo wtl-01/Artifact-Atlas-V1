@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 
-const HistorySlider = () => {
+const HistorySlider = ({ value, onYearChange }) => {
 
   const currentYear = new Date().getFullYear();
-
-  const [value, setValue] = useState(currentYear);
 
   // Helper to turn -3000 into "3000 BC" and 2026 into "2026 AD"
   const formatYear = (year) => {
@@ -18,29 +16,31 @@ const HistorySlider = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl p-8 bg-slate-50 rounded-xl shadow-sm">
-      <div className="flex justify-between mb-4 text-sm font-medium text-slate-500">
-        <span>3000 BC</span>
-        <span className="text-blue-600 text-lg font-bold">{formatYear(value)}</span>
-        <span>{currentYear} AD</span>
-      </div>
+    <div className="w-full max-w-4xl p-8 bg-slate-50 rounded-xl shadow-sm">
+        <div className="flex justify-between mb-4 text-sm font-medium text-slate-500">
+            <span>3000 BC</span>
+            {/* 1. Changed text-blue-600 to text-slate-800 or amber-700 */}
+            <span className="text-slate-800 text-lg font-bold">{formatYear(value)}</span>
+            <span>{currentYear} AD</span>
+        </div>
 
-      <input
-        type="range"
-        min="-3000"
-        max={currentYear}
-        step="1"
-        value={value}
-        onChange={(e) => setValue(parseInt(e.target.value))}
-        className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-      />
+        <input
+            type="range"
+            min="-3000"
+            max={currentYear}
+            step="1"
+            value={value}
+            onChange={(e) => onYearChange(parseInt(e.target.value))}
+            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+            style={{ accentColor: '#414750' }} 
+        />
 
-      <div className="flex justify-between mt-2 text-xs text-slate-400">
-        <span>Ancient Era</span>
-        <span>Middle Ages</span>
-        <span>Modern Era</span>
-      </div>
-    </div>
+        <div className="flex justify-between mt-2 text-xs text-slate-400">
+            <span>Ancient Era</span>
+            <span>Middle Ages</span>
+            <span>Modern Era</span>
+        </div>
+        </div>
   );
 };
 

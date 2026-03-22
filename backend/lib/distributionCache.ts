@@ -21,7 +21,7 @@ export type Distribution = {
 
 // Survives Next.js hot-reloads in dev via globalThis
 const g = globalThis as unknown as { _artifactDist?: Distribution };
-
+const bannedIso3 = new Set(['BRN', 'GUY', 'VCT', 'VAT']);
 /**
  * Returns (and lazily builds) a cached distribution of eligible artifacts
  * bucketed by time period and country.
@@ -35,6 +35,7 @@ export async function getDistribution(): Promise<Distribution> {
   const periods: PeriodEntry[]                        = [];
   const byPeriod = {} as Record<TimePeriod, CountryEntry[]>;
 
+
   for (const [period, range] of Object.entries(PERIOD_RANGES) as [TimePeriod, { gte?: bigint; lt?: bigint }][]) {
     const rows = await db.metObjects.groupBy({
       by: ['Modern_Country'],
@@ -46,9 +47,15 @@ export async function getDistribution(): Promise<Distribution> {
       _count: { Object_ID: true },
     });
 
+    type Row = (typeof rows)[number];
+    
     const countries: CountryEntry[] = rows
-      .filter(r => r.Modern_Country && metCountryToIso3(r.Modern_Country))
-      .map(r => ({ country: r.Modern_Country!, count: r._count.Object_ID }));
+      .filter((r: Row) => {
+        if (!r.Modern_Country) return false;
+        const iso3 = metCountryToIso3(r.Modern_Country);
+        return iso3 !== null && !bannedIso3.has(iso3);
+      })
+      .map((r: Row) => ({ country: r.Modern_Country!, count: r._count.Object_ID }));
 
     const total = countries.reduce((s, c) => s + c.count, 0);
     if (total > 0) {

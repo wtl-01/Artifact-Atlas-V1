@@ -101,9 +101,9 @@ function Gamescreen() {
     return (
         <div className={styles.game_ui}>
             <img src={chinese_vase} className={styles.image}></img>
-            {gameStatus === "active" && (<Gameselectors />)}
+            {gameStatus === "active" && (<Gameselectors status={gameStatus} setGameStatus={setGameStatus}/>)}
             {(gameStatus === "won" || gameStatus === "lost") && (
-                <Finishdisplay status={gameStatus}/>
+                <Finishdisplay status={gameStatus} setGameStatus={setGameStatus}/>
             )}
             <div className={styles.guesses}>
                 <ul className={styles.guess_list}>

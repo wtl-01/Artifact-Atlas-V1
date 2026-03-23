@@ -5,7 +5,7 @@ import React, { useState, useMemo } from 'react';
 import ReactFlagsSelect from "react-flags-select";
 
 
-function Gameselectors() {
+function Gameselectors({status, setGameStatus}) {
     
     //for direction hints
     const directions = {
@@ -133,7 +133,7 @@ function Gameselectors() {
                     <button className={styles.game_button}>
                         Submit
                     </button>
-                    <button className={styles.game_button}>
+                    <button className={styles.game_button} onClick={() => setGameStatus("lost")}>
                         Forfeit
                     </button>
                 </div>

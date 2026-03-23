@@ -1,6 +1,6 @@
 import styles from './Finishdisplay.module.css'
 
-function Finishdisplay({status}) {
+function Finishdisplay({status, setGameStatus}) {
 
     return (
         <div className={styles.content}>
@@ -11,7 +11,9 @@ function Finishdisplay({status}) {
             )}
             <h2>Artifact Details: China, 1500s</h2>
             <div>
-                <button className={styles.game_button}>New Game</button>
+                <button className={styles.game_button} onClick={() => setGameStatus("active")}>
+                    New Game
+                </button>
                 <button className={styles.game_button}>Flag</button>
             </div>
             

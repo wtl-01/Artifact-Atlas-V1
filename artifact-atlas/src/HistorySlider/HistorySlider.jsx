@@ -16,13 +16,27 @@ const HistorySlider = ({ value, onYearChange }) => {
   };
 
   return (
-    <div className="w-full max-w-4xl p-8 bg-slate-50 rounded-xl shadow-sm">
-        <div className="flex justify-between mb-4 text-sm font-medium text-slate-500">
-            <span>3000 BC</span>
-            {/* 1. Changed text-blue-600 to text-slate-800 or amber-700 */}
-            <span className="text-slate-800 text-lg font-bold">{formatYear(value)}</span>
-            <span>{currentYear} AD</span>
-        </div>
+    <div style={{
+      width: '100%',
+      maxWidth: '900px',
+      margin: '0 auto',
+      padding: '20px',
+      backgroundColor: 'transparent',
+      borderRadius: '12px',
+      boxShadow: '0 8px 30px rgba(0, 0, 0, 0.25)'
+    }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginBottom: '12px',
+        color: 'white',
+        fontSize: '14px',
+        fontWeight: 500,
+      }}>
+        <span>3000 BC</span>
+        <span style={{ color: 'white', fontSize: '18px', fontWeight: 700 }}>{formatYear(value)}</span>
+        <span>{currentYear} AD</span>
+      </div>
 
         <input
             type="range"
@@ -30,15 +44,21 @@ const HistorySlider = ({ value, onYearChange }) => {
             max={currentYear}
             step="1"
             value={value}
-            onChange={(e) => onYearChange(parseInt(e.target.value))}
-            className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
-            style={{ accentColor: '#414750' }} 
+            onChange={(e) => onYearChange(parseInt(e.target.value, 10))}
+            style={{
+              width: '100%',
+              height: '12px',
+              backgroundColor: '#e2e8f0',
+              borderRadius: '999px',
+              accentColor: '#334155',
+              cursor: 'pointer',
+            }}
         />
 
-        <div className="flex justify-between mt-2 text-xs text-slate-400">
-            <span>Ancient Era</span>
-            <span>Middle Ages</span>
-            <span>Modern Era</span>
+        <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', marginTop: '8px', fontSize: '12px', color: '#94a3b8' }}>
+          <span style={{ flex: 1, textAlign: 'left' }}>Ancient Era</span>
+          <span style={{ flex: 1, textAlign: 'center' }}>Middle Ages</span>
+          <span style={{ flex: 1, textAlign: 'right' }}>Modern Era</span>
         </div>
         </div>
   );

@@ -1,7 +1,7 @@
 import chinese_vase from '../assets/Chinese_vase.jpg'
 import styles from './Gamescreen.module.css'
 import HistorySlider from '../HistorySlider/HistorySlider.jsx'
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import ReactFlagsSelect from "react-flags-select";
 import Gameselectors from '../Gameselectors/Gameselectors.jsx'
 import Finishdisplay  from '../Finishdisplay/Finishdisplay.jsx';
@@ -9,8 +9,13 @@ import Finishdisplay  from '../Finishdisplay/Finishdisplay.jsx';
 
 function Gamescreen() {
 
+    //we need to store 3 things in localstorage/custom hook, the image url, the game id, and the list of guesses, so when user refreshes the page they dont disappear
+
     //This is hook to set the current game status
     const [gameStatus, setGameStatus] = useState("active"); // possible values: "active", "won", "lost"
+
+    //This is the list of guesses the user has made, we will use this to display the guess history on the right side of the screen, and we will also use this to determine whether the user has won or lost (after 5 guesses or correct guess)
+    const [guesses, setGuesses] = useState([]); // each guess will be an object with country, year, and feedback (distance, direction, time)
 
     //for direction hints
     const directions = {
@@ -24,72 +29,11 @@ function Gamescreen() {
         SE: '↘️'
     }
 
-    //This is the hook to set the country the user selects
-    const [selectedCountry, setSelectedCountry] = useState("");
-
-    //This is the state (year) value we pass to the child HistorySlider component as props
-    const currentYear = new Date().getFullYear();
-    const [selectedYear, setSelectedYear] = useState(currentYear);
-
-    const user_guess = [selectedCountry, selectedYear]
-
-
-    //API call to start a new game session, this will get the picture etc when page loads or next game selected
+    //API call to start a new game session, this will get the picture etc when page loads or next game selected, and we will get the game id which we pass to gameselector
     const handleStartGame = async () => {
         // 1. First lets handle the API call
         try {
-            const response = await fetch('https://localhost:8888/gameid', {
-                method: 'GET'
-            })
-        }
-        catch (error) {
-
-        }
-    }
-
-    //API call to submit a guess for evaluation (right/wrong)
-    const handleSubmit = async () => {
-        // 1. First lets handle the API call
-        try {
-            const response = await fetch('https://localhost:8888/gameid/submit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    country: selectedCountry,
-                    year: selectedYear
-                })
-            })
-        }
-        catch (error) {
-            console.log(error)
-        }
-
-        // 2. Second lets handle the frontend UI portion 
-
-    }
-
-    //API call to give up, this will display the answer and render the page to have a next button
-    const handleForfeit = async () => {
-        //1. First lets handle the API call
-        try {
-            const response = await fetch('https://localhost:8888/gameid/forfeit', {
-                method: 'POST'
-            })
-        }
-        catch (error) {
-            console.log(error)
-        }
-
-        //2. Then lets handle the frontend UI portion
-    }
-
-    //this flags an item if user thinks it is not valid
-    const handleFlag = async () => {
-        //1. First lets handle the API call
-        try {
-            const response = await fetch('https://localhost:8888/gameid/flag', {
+            const response = await fetch('http://localhost:3001/api/game/new', {
                 method: 'POST'
             })
         }
@@ -97,6 +41,15 @@ function Gamescreen() {
             console.log(error)
         }
     }
+
+    useEffect(() => {
+        handleStartGame();
+
+        return () => {
+            // Any necessary cleanup can be done here, should clear guess list so it empties when user starts a new game
+        }
+    }, [])
+
 
     return (
         <div className={styles.game_ui}>
@@ -107,11 +60,11 @@ function Gamescreen() {
             )}
             <div className={styles.guesses}>
                 <ul className={styles.guess_list}>
-                    <li><div className={styles.guess}>Canada 1870 | ⬅️ 8000 km/4970.97 mi | ⏰ Ahead</div></li>
-                    <li><div className={styles.guess}>Canada 1870 | ⬆️ 8000 km/4970.97 mi | ⏰ Behind</div></li>
-                    <li><div className={styles.guess}>Canada 1870 | ⬇️ 8000 km/4970.97 mi | ⏰ Ahead</div></li>
-                    <li><div className={styles.guess}>Canada 1870 | ➡️ 8000 km/4970.97 mi | ⏰ Behind</div></li>
-                    <li><div className={styles.guess}>Canada 1870 | ⬅️ 8000 km/4970.97 mi | ⏰ Ahead</div></li>
+                    <li><div className={styles.guess}>🇨🇦 1870 | ⬅️ 8000 km/4970.97 mi | ⏰ Ahead</div></li>
+                    <li><div className={styles.guess}>🇨🇦 1870 | ⬆️ 8000 km/4970.97 mi | ⏰ Behind</div></li>
+                    <li><div className={styles.guess}>🇨🇦 1870 | ⬇️ 8000 km/4970.97 mi | ⏰ Ahead</div></li>
+                    <li><div className={styles.guess}>🇨🇦 1870 | ➡️ 8000 km/4970.97 mi | ⏰ Behind</div></li>
+                    <li><div className={styles.guess}>🇨🇦 1870 | ⬅️ 8000 km/4970.97 mi | ⏰ Ahead</div></li>
                 </ul>
             </div>
         </div>

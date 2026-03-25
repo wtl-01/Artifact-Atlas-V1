@@ -26,26 +26,15 @@ function Gameselectors({status, setGameStatus}) {
     const currentYear = new Date().getFullYear();
     const [selectedYear, setSelectedYear] = useState(currentYear);
 
-    const user_guess = [selectedCountry, selectedYear]
+    console.log(selectedCountry)
+    console.log(selectedYear)
 
-    //API call to start a new game session, this will get the picture etc when page loads or next game selected
-    const handleStartGame = async () => {
-        // 1. First lets handle the API call
-        try {
-            const response = await fetch('https://localhost:8888/gameid', {
-                method: 'GET'
-            })
-        }
-        catch (error) {
-
-        }
-    }
 
     //API call to submit a guess for evaluation (right/wrong)
     const handleSubmit = async () => {
         // 1. First lets handle the API call
         try {
-            const response = await fetch('https://localhost:8888/gameid/submit', {
+            const response = await fetch('http://localhost:3001/api/game/gameid/guess', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -60,7 +49,7 @@ function Gameselectors({status, setGameStatus}) {
             console.log(error)
         }
 
-        // 2. Second lets handle the frontend UI portion 
+        // 2. Second lets handle the frontend UI portion, this will update the guess list
 
     }
 
@@ -77,19 +66,6 @@ function Gameselectors({status, setGameStatus}) {
         }
 
         //2. Then lets handle the frontend UI portion
-    }
-
-    //this flags an item if user thinks it is not valid
-    const handleFlag = async () => {
-        //1. First lets handle the API call
-        try {
-            const response = await fetch('https://localhost:8888/gameid/flag', {
-                method: 'POST'
-            })
-        }
-        catch (error) {
-            console.log(error)
-        }
     }
 
     return (

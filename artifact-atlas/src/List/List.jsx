@@ -1,6 +1,7 @@
 import styles from './List.module.css';
 import { useState, useEffect } from 'react'; 
 import x_icon from '../assets/x-mark.png';
+import { Link } from 'react-router-dom';
 
 function List() {
     const [modal, setModal] = useState(false);
@@ -30,13 +31,13 @@ function List() {
     return (
         <>
         <ul className={styles.list}>
-            <li>T.O.S.</li>
+            <li><Link to="/tos" target='_blank'>T.O.S.</Link></li>
             <li>|</li>
-            <li>PRIVACY</li>
+            <li><Link to="/privacy" target='_blank'>PRIVACY</Link></li>
             <li>|</li>
-            <li>ASSETS</li>
+            <li><Link to="/assets" target='_blank'>ASSETS</Link></li>
             <li>|</li>
-            <li>INSTRUCTIONS</li>
+            <li><Link to="/instructions" target='_blank'>INSTRUCTIONS</Link></li>
             <li>|</li>
             <li onClick={toggleModal} style={{cursor: 'pointer'}}>CONTACT</li>
         </ul>

@@ -1,13 +1,22 @@
 import styles from './Finishdisplay.module.css'
 import countries from 'i18n-iso-countries'
 import enLocale from 'i18n-iso-countries/langs/en.json'
+
 import React, { useState } from 'react';
 import loading from '../assets/loading.gif'
 import x_icon from '../assets/x-mark.png'
 
+
 countries.registerLocale(enLocale)
 
-function Finishdisplay({status, onNewGame, artifact}) {
+function Finishdisplay({status, onNewGame, artifact, gameId}) {
+
+
+    const [showReport, setShowReport]             = useState(false);
+    const [dateWrong, setDateWrong]               = useState(false);
+    const [locationWrong, setLocationWrong]       = useState(false);
+    const [description, setDescription]           = useState('');
+    const [reportStatus, setReportStatus]         = useState(null); // 'sent' | 'error'
 
     const [isNewGame, setIsNewGame] = useState(false)
 
@@ -42,6 +51,10 @@ function Finishdisplay({status, onNewGame, artifact}) {
         setReportFields({ is_date_incorrect: false, is_location_incorrect: false, description: '' });
     };
 
+    //location and date incorrect toggle state hooks
+    const [locationIncorrect, setLocationIncorrect] = useState(false);
+    const [dateIncorrect, setDateIncorrect] = useState(false);
+
     const handleNewGame = async () => {
         setIsNewGame(true)
         try {
@@ -50,6 +63,32 @@ function Finishdisplay({status, onNewGame, artifact}) {
             setIsNewGame(false)
         }
     }
+
+    const handleSubmitFlag = async (e) => {
+        e.preventDefault();
+        // Here you would typically send the flag data to your backend for processing
+        const flagData = {
+            objectId: gameId,
+            is_location_incorrect: locationIncorrect,
+            is_date_incorrect: dateIncorrect,
+            description: e.target.description.value
+        };
+        console.log(flagData);
+
+        try {
+            await fetch(`${import.meta.env.VITE_API_URL}/api/report`, {
+                method: 'POST',
+                body: JSON.stringify(flagData)
+            });
+        } catch (error) {
+            console.error('Error submitting flag:', error);
+        }
+        // Reset form and close modal after submission
+        setLocationIncorrect(false);
+        setDateIncorrect(false);
+        e.target.reset();
+        setModal(false);
+    };
 
     const yearRange = artifact
         ? (artifact.beginYear === artifact.endYear
@@ -60,6 +99,26 @@ function Finishdisplay({status, onNewGame, artifact}) {
     const countryName = artifact
         ? (countries.getName(artifact.country, 'en') ?? artifact.country)
         : null;
+
+    const handleReport = async () => {
+        if (!artifact?.objectId) return;
+        if (!dateWrong && !locationWrong && !description.trim()) return;
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    objectId:             artifact.objectId,
+                    is_date_incorrect:    dateWrong,
+                    is_location_incorrect: locationWrong,
+                    description:          description.trim() || null,
+                }),
+            });
+            setReportStatus(res.ok ? 'sent' : 'error');
+        } catch {
+            setReportStatus('error');
+        }
+    };
 
     return (
         <>
@@ -84,7 +143,59 @@ function Finishdisplay({status, onNewGame, artifact}) {
                 <button className={styles.game_button} onClick={() => setModal(true)} disabled={!artifact?.objectId}>
                     Flag 🚩
                 </button>
+                {artifact && (
+                    <button
+                        className={styles.game_button}
+                        onClick={() => { setShowReport(v => !v); setReportStatus(null); }}
+                    >
+                        Flag
+                    </button>
+                )}
             </div>
+
+            {showReport && (
+                <div className={styles.report_form}>
+                    {reportStatus === 'sent' ? (
+                        <p>Report submitted. Thank you!</p>
+                    ) : (
+                        <>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={dateWrong}
+                                    onChange={e => setDateWrong(e.target.checked)}
+                                />
+                                {' '}Date is incorrect
+                            </label>
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={locationWrong}
+                                    onChange={e => setLocationWrong(e.target.checked)}
+                                />
+                                {' '}Location is incorrect
+                            </label>
+                            <textarea
+                                className={styles.report_textarea}
+                                placeholder="Additional details (optional)"
+                                value={description}
+                                onChange={e => setDescription(e.target.value)}
+                                rows={3}
+                            />
+                            {reportStatus === 'error' && (
+                                <p className={styles.report_error}>Failed to submit. Try again.</p>
+                            )}
+                            <button
+                                className={styles.game_button}
+                                onClick={handleReport}
+                                disabled={!dateWrong && !locationWrong && !description.trim()}
+                            >
+                                Submit Report
+                            </button>
+                        </>
+                    )}
+                </div>
+            )}
         </div>
         {modal && (
                 <div className={styles.modal} onClick={handleCloseModal}>

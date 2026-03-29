@@ -3,9 +3,21 @@ import React, { useState, useEffect, useRef } from 'react';
 import Gameselectors from '../Gameselectors/Gameselectors.jsx'
 import Finishdisplay  from '../Finishdisplay/Finishdisplay.jsx';
 import Flag from 'react-world-flags';
+import { motion } from 'framer-motion';
 
 
 function Gamescreen() {
+
+    const directions = {
+        N: '⬆️',
+        NE: '↗️',
+        E: '➡️',
+        SE: '↘️',
+        S: '⬇️',
+        SW: '↙️',
+        W: '⬅️',
+        NW: '↖️'
+    }
 
     const MAX_GUESSES = 5;
 
@@ -55,30 +67,65 @@ function Gamescreen() {
 
     return (
         <div className={styles.game_ui}>
-            {imageUrl && <img src={imageUrl} className={styles.image} alt="Artifact" />}
-            {gameStatus === "active" && (
-                <Gameselectors
-                    status={gameStatus}
-                    setGameStatus={setGameStatus}
-                    gameId={gameId}
-                    setGuesses={setGuesses}
-                    setArtifact={setArtifact}
+            {imageUrl && (
+                <motion.img 
+                    key={imageUrl}
+                    src={imageUrl} 
+                    className={styles.image} 
+                    alt="Artifact"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1, ease: "easeOut" }}
                 />
             )}
-            {(gameStatus === "won" || gameStatus === "lost") && (
-                <Finishdisplay status={gameStatus} onNewGame={handleNewGame} artifact={artifact}/>
+            {gameStatus === "active" && (
+                <motion.div
+                    key="gameselectors"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+                >
+                    <Gameselectors
+                        status={gameStatus}
+                        setGameStatus={setGameStatus}
+                        gameId={gameId}
+                        setGuesses={setGuesses}
+                        setArtifact={setArtifact}
+                    />
+                </motion.div>
             )}
-            <div className={styles.guesses}>
+            {(gameStatus === "won" || gameStatus === "lost") && (
+                <motion.div
+                    key="finishdisplay"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+                >
+                    <Finishdisplay status={gameStatus} onNewGame={handleNewGame} artifact={artifact} gameId={gameId}/>
+                </motion.div>
+            )}
+            <motion.div 
+                className={styles.guesses}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
+            >
                 <ul className={styles.guess_list}>
                     {Array.from({ length: MAX_GUESSES }).map((_, i) => {
                         const guess = guesses[i];
                         return (
                             <li key={i}>
                                 {guess ? (
-                                    <div className={styles.guess}>
+                                    <motion.div 
+                                        className={styles.guess}
+                                        key={`guess-${i}-${guess.country}-${guess.year}`}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.4, ease: "easeOut" }}
+                                    >
                                         <Flag code={guess.country} style={{ width: 24, marginRight: 6, verticalAlign: 'middle' }} />
-                                        {guess.year} | {guess.countryCorrect ? '✓' : `${guess.cardinal} ${guess.distanceKm} km`} | ⏰ {guess.yearHint}
-                                    </div>
+                                        {guess.year} | {guess.countryCorrect ? '✓' : `${directions[guess.cardinal]} ${guess.distanceKm} km`} | ⏰ {guess.yearHint}
+                                    </motion.div>
                                 ) : (
                                     <div className={styles.guess_placeholder}></div>
                                 )}
@@ -86,7 +133,7 @@ function Gamescreen() {
                         );
                     })}
                 </ul>
-            </div>
+            </motion.div>
         </div>
     )
 }

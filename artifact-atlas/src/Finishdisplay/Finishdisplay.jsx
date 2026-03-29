@@ -7,11 +7,15 @@ import x_icon from '../assets/x-mark.png'
 
 countries.registerLocale(enLocale)
 
-function Finishdisplay({status, onNewGame, artifact}) {
+function Finishdisplay({status, onNewGame, artifact, gameId}) {
 
     const [isNewGame, setIsNewGame] = useState(false)
 
     const [modal, setModal] = useState(false);
+
+    //location and date incorrect toggle state hooks
+    const [locationIncorrect, setLocationIncorrect] = useState(false);
+    const [dateIncorrect, setDateIncorrect] = useState(false);
 
     const handleNewGame = async () => {
         setIsNewGame(true)
@@ -21,6 +25,32 @@ function Finishdisplay({status, onNewGame, artifact}) {
             setIsNewGame(false)
         }
     }
+
+    const handleSubmitFlag = async (e) => {
+        e.preventDefault();
+        // Here you would typically send the flag data to your backend for processing
+        const flagData = {
+            objectId: gameId,
+            is_location_incorrect: locationIncorrect,
+            is_date_incorrect: dateIncorrect,
+            description: e.target.description.value
+        };
+        console.log(flagData);
+
+        try {
+            await fetch(`${import.meta.env.VITE_API_URL}/api/report`, {
+                method: 'POST',
+                body: JSON.stringify(flagData)
+            });
+        } catch (error) {
+            console.error('Error submitting flag:', error);
+        }
+        // Reset form and close modal after submission
+        setLocationIncorrect(false);
+        setDateIncorrect(false);
+        e.target.reset();
+        setModal(false);
+    };
 
     const yearRange = artifact
         ? (artifact.beginYear === artifact.endYear
@@ -61,12 +91,38 @@ function Finishdisplay({status, onNewGame, artifact}) {
                 // 3. Changed class names to use the 'styles' object
                 <div className={styles.modal} onClick={() => setModal(false)}>
                   <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-                    <h2>Contact Us</h2>
-                    <form className={styles.form} action="https://formspree.io/f/xaqdyelz" method="POST">
+                    <h2>Flag Artifact 🚩</h2>
+                    <form className={styles.form} onSubmit={handleSubmitFlag}>
                     <div className={styles.inputContainer}>
-                      <input type="text" placeholder="Name" name="name" className={styles.inputField} required/>
-                      <input type="email" placeholder="Email" name="email" className={styles.inputField} required/>
-                      <textarea className={`${styles.inputField} ${styles.messageField}`} placeholder="Message" name="message" required></textarea>
+                      
+                      <div className={styles.checkboxGroup}>
+                        <label>
+                          <input 
+                            type="checkbox" 
+                            name="locationIncorrect" 
+                            value="yes" 
+                            checked={locationIncorrect}
+                            onChange={(e) => setLocationIncorrect(e.target.checked)}
+                          />
+                          Location Incorrect
+                        </label>
+                      </div>
+                      
+                      <div className={styles.checkboxGroup}>
+                        <label>
+                          <input 
+                            type="checkbox" 
+                            name="dateIncorrect" 
+                            value="yes" 
+                            checked={dateIncorrect}
+                            onChange={(e) => setDateIncorrect(e.target.checked)}
+                          />
+                          Date Incorrect
+                        </label>
+                      </div>
+                      
+                      <textarea className={`${styles.inputField} ${styles.messageField}`} placeholder="Description" name="description" required></textarea>
+                      
                       </div>
                       <button className={styles.closeModal} onClick={() => setModal(false)}>
                         <img className={styles.closeIcon}  src={x_icon} alt="Close" />

@@ -7,6 +7,16 @@ import hdlogo from './assets/half-dome-logo.png'
 
 function App() {
   const [started, setStarted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleStart = async () => {
+    setIsLoading(true);
+    // Wait a bit for the loading animation to show
+    setTimeout(() => {
+      setStarted(true);
+      setIsLoading(false);
+    }, 1500); // Adjust timing as needed
+  };
 
   return (
     <>
@@ -25,7 +35,7 @@ function App() {
         <div className='item2'>
           {started
             ? <Gamescreen />
-            : <Homepage onStart={() => setStarted(true)} />
+            : <Homepage onStart={handleStart} isLoading={isLoading} />
           }
         </div>
         <div className='item3'>

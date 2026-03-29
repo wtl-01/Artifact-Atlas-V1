@@ -12,6 +12,35 @@ function Finishdisplay({status, onNewGame, artifact}) {
     const [isNewGame, setIsNewGame] = useState(false)
 
     const [modal, setModal] = useState(false);
+    const [reportFields, setReportFields] = useState({ is_date_incorrect: false, is_location_incorrect: false, description: '' });
+    const [reportStatus, setReportStatus] = useState(null); // null | 'submitting' | 'success' | 'error'
+
+    const handleReport = async (e) => {
+        e.preventDefault();
+        if (!artifact?.objectId) return;
+        setReportStatus('submitting');
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    objectId:             artifact.objectId,
+                    is_date_incorrect:    reportFields.is_date_incorrect,
+                    is_location_incorrect: reportFields.is_location_incorrect,
+                    description:          reportFields.description || undefined,
+                }),
+            });
+            setReportStatus(res.ok ? 'success' : 'error');
+        } catch {
+            setReportStatus('error');
+        }
+    };
+
+    const handleCloseModal = () => {
+        setModal(false);
+        setReportStatus(null);
+        setReportFields({ is_date_incorrect: false, is_location_incorrect: false, description: '' });
+    };
 
     const handleNewGame = async () => {
         setIsNewGame(true)
@@ -52,25 +81,64 @@ function Finishdisplay({status, onNewGame, artifact}) {
                 <button className={styles.game_button} onClick={handleNewGame} disabled={isNewGame}>
                     {isNewGame ? <img src={loading} alt="Loading" className={styles.loadingIcon} /> : 'New Game 🕹️'}
                 </button>
-                <button className={styles.game_button} onClick={() => setModal(true)}>
+                <button className={styles.game_button} onClick={() => setModal(true)} disabled={!artifact?.objectId}>
                     Flag 🚩
                 </button>
             </div>
         </div>
         {modal && (
-                // 3. Changed class names to use the 'styles' object
-                <div className={styles.modal} onClick={() => setModal(false)}>
+                <div className={styles.modal} onClick={handleCloseModal}>
                   <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
-                    <h2>Contact Us</h2>
+                    <button className={styles.closeModal} onClick={handleCloseModal}>
+                      <img className={styles.closeIcon} src={x_icon} alt="Close" />
+                    </button>
+                    <h2>Report Inaccuracy</h2>
+
+                    {reportStatus === 'success' ? (
+                      <p>Thanks — your report has been submitted.</p>
+                    ) : (
+                      <form className={styles.form} onSubmit={handleReport}>
+                        <div className={styles.inputContainer}>
+                          <label className={styles.checkboxLabel}>
+                            <input
+                              type="checkbox"
+                              checked={reportFields.is_date_incorrect}
+                              onChange={e => setReportFields(f => ({ ...f, is_date_incorrect: e.target.checked }))}
+                            />
+                            &nbsp;Date is incorrect
+                          </label>
+                          <label className={styles.checkboxLabel}>
+                            <input
+                              type="checkbox"
+                              checked={reportFields.is_location_incorrect}
+                              onChange={e => setReportFields(f => ({ ...f, is_location_incorrect: e.target.checked }))}
+                            />
+                            &nbsp;Location is incorrect
+                          </label>
+                          <textarea
+                            className={`${styles.inputField} ${styles.messageField}`}
+                            placeholder="Additional details (optional)"
+                            value={reportFields.description}
+                            onChange={e => setReportFields(f => ({ ...f, description: e.target.value }))}
+                          />
+                        </div>
+                        {reportStatus === 'error' && <p className={styles.errorText}>Something went wrong — please try again.</p>}
+                        <button
+                          type="submit"
+                          className={styles.sendButton}
+                          disabled={reportStatus === 'submitting' || (!reportFields.is_date_incorrect && !reportFields.is_location_incorrect && !reportFields.description)}
+                        >
+                          {reportStatus === 'submitting' ? 'Sending…' : 'Submit Report'}
+                        </button>
+                      </form>
+                    )}
+
                     <form className={styles.form} action="https://formspree.io/f/xaqdyelz" method="POST">
-                    <div className={styles.inputContainer}>
-                      <input type="text" placeholder="Name" name="name" className={styles.inputField} required/>
-                      <input type="email" placeholder="Email" name="email" className={styles.inputField} required/>
-                      <textarea className={`${styles.inputField} ${styles.messageField}`} placeholder="Message" name="message" required></textarea>
+                      <div className={styles.inputContainer}>
+                        <input type="text" placeholder="Name" name="name" className={styles.inputField} required/>
+                        <input type="email" placeholder="Email" name="email" className={styles.inputField} required/>
+                        <textarea className={`${styles.inputField} ${styles.messageField}`} placeholder="Message" name="message" required></textarea>
                       </div>
-                      <button className={styles.closeModal} onClick={() => setModal(false)}>
-                        <img className={styles.closeIcon}  src={x_icon} alt="Close" />
-                      </button>
                       <button type="submit" className={styles.sendButton}>SEND</button>
                     </form>
                   </div>

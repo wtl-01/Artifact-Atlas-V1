@@ -22,7 +22,6 @@ function Finishdisplay({status, onNewGame, artifact, gameId}) {
 
     const [modal, setModal] = useState(false);
     const [reportFields, setReportFields] = useState({ is_date_incorrect: false, is_location_incorrect: false, description: '' });
-    const [reportStatus, setReportStatus] = useState(null); // null | 'submitting' | 'success' | 'error'
 
     const handleReport = async (e) => {
         e.preventDefault();
@@ -100,25 +99,6 @@ function Finishdisplay({status, onNewGame, artifact, gameId}) {
         ? (countries.getName(artifact.country, 'en') ?? artifact.country)
         : null;
 
-    const handleReport = async () => {
-        if (!artifact?.objectId) return;
-        if (!dateWrong && !locationWrong && !description.trim()) return;
-        try {
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/report`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    objectId:             artifact.objectId,
-                    is_date_incorrect:    dateWrong,
-                    is_location_incorrect: locationWrong,
-                    description:          description.trim() || null,
-                }),
-            });
-            setReportStatus(res.ok ? 'sent' : 'error');
-        } catch {
-            setReportStatus('error');
-        }
-    };
 
     return (
         <>
@@ -143,14 +123,6 @@ function Finishdisplay({status, onNewGame, artifact, gameId}) {
                 <button className={styles.game_button} onClick={() => setModal(true)} disabled={!artifact?.objectId}>
                     Flag 🚩
                 </button>
-                {artifact && (
-                    <button
-                        className={styles.game_button}
-                        onClick={() => { setShowReport(v => !v); setReportStatus(null); }}
-                    >
-                        Flag
-                    </button>
-                )}
             </div>
 
             {showReport && (
@@ -243,15 +215,6 @@ function Finishdisplay({status, onNewGame, artifact, gameId}) {
                         </button>
                       </form>
                     )}
-
-                    <form className={styles.form} action="https://formspree.io/f/xaqdyelz" method="POST">
-                      <div className={styles.inputContainer}>
-                        <input type="text" placeholder="Name" name="name" className={styles.inputField} required/>
-                        <input type="email" placeholder="Email" name="email" className={styles.inputField} required/>
-                        <textarea className={`${styles.inputField} ${styles.messageField}`} placeholder="Message" name="message" required></textarea>
-                      </div>
-                      <button type="submit" className={styles.sendButton}>SEND</button>
-                    </form>
                   </div>
                 </div>
               )}

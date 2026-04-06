@@ -3,11 +3,16 @@ import { PrismaClient } from '@prisma/client';
 // Append PgBouncer-compatible pool parameters if not already present.
 // connection_limit=1 prevents unbounded pool growth per process;
 // pool_timeout=20 avoids hung requests under load.
-function buildUrl(raw: string): string {
-  const u = new URL(raw);
-  if (!u.searchParams.has('connection_limit')) u.searchParams.set('connection_limit', '1');
-  if (!u.searchParams.has('pool_timeout'))     u.searchParams.set('pool_timeout', '20');
-  return u.toString();
+function buildUrl(raw?: string): string {
+  if (!raw) return '';
+  try {
+    const u = new URL(raw);
+    if (!u.searchParams.has('connection_limit')) u.searchParams.set('connection_limit', '1');
+    if (!u.searchParams.has('pool_timeout'))     u.searchParams.set('pool_timeout', '20');
+    return u.toString();
+  } catch (err) {
+    return raw;
+  }
 }
 
 // Prevent multiple Prisma Client instances in Next.js dev (hot-reload)

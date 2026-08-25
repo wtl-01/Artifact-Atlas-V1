@@ -23,6 +23,11 @@ body {
   position: relative;
 }
 
+.homeicon {
+  height: 40px;
+  width: 40px;
+}
+
 .logo_wrapper {
   display: flex;
   justify-content: center;

@@ -41,6 +41,13 @@
     transition: all 0.2s ease-in-out;
 }
 
+.button_container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;  /* Keeps both buttons perfectly aligned on their vertical centers */
+  gap: 16px;
+}
+
 .start_button:hover {
     background-color: #181818;
     transform: translateY(-2px);
@@ -74,4 +81,8 @@
 .mayanImage {
   max-width: 250px;    /* Ensures images don't overflow */
   height: auto;       /* Maintains aspect ratio */
+}
+
+.archelogistsImage {
+    height: 400px;
 }

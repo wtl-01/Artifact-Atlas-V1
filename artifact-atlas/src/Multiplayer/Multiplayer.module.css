@@ -29,7 +29,7 @@
 .start_button {
     border-radius: 10px;
     height: 52px;
-    width: 160px;
+    width: 220px;
     background: transparent;
     border: 0.5px solid white;
     color: white;
@@ -39,6 +39,10 @@
     cursor: pointer;
     letter-spacing: 0.1em;
     transition: all 0.2s ease-in-out;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .button_container {
